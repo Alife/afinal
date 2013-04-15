@@ -33,6 +33,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.text.TextUtils;
 import android.util.Log;
 
 public class FinalDb {
@@ -467,6 +468,40 @@ public class FinalDb {
 	public <T> List<T> findAllByWhere(Class<T> clazz,String strWhere,String orderBy){
 		checkTableExist(clazz);
 		return findAllBySql(clazz,SqlBuilder.getSelectSQLByWhere(clazz,strWhere)+" ORDER BY '"+orderBy+"' DESC");
+	}
+	
+	/**
+	 * 根据条件查找所有数据(支持分页)
+	 * 
+	 * @param clazz
+	 * @param strWhere
+	 *            条件为空的时候查找所有数据
+	 * @param orderBy
+	 *            排序字段
+	 */
+	public <T> List<T> findAllByWhere(Class<T> clazz, String strWhere, Integer limit, Integer offset) {
+		checkTableExist(clazz);
+		return findAllByWhere(clazz, strWhere, null, limit, offset);
+	}
+
+	/**
+	 * 根据条件查找所有数据(支持分页)
+	 * 
+	 * @param clazz
+	 * @param strWhere	条件为空的时候查找所有数据
+	 * @param orderBy	排序字段
+	 */
+	public <T> List<T> findAllByWhere(Class<T> clazz, String strWhere, String orderBy, Integer limit, Integer offset) {
+		checkTableExist(clazz);
+		String sqlString = SqlBuilder.getSelectSQLByWhere(clazz, strWhere);
+		if (orderBy != null && !TextUtils.isEmpty(orderBy))
+			sqlString += " ORDER BY " + orderBy + " DESC";
+		if (limit != null && limit > 0) {
+			sqlString += " Limit " + limit;
+			if (offset != null && offset > 0)
+				sqlString += " Offset " + offset;
+		}
+		return findAllBySql(clazz, sqlString);
 	}
 	
 	/**
