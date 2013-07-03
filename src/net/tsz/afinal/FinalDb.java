@@ -467,7 +467,7 @@ public class FinalDb {
 	 */
 	public <T> List<T> findAllByWhere(Class<T> clazz,String strWhere,String orderBy){
 		checkTableExist(clazz);
-		return findAllBySql(clazz,SqlBuilder.getSelectSQLByWhere(clazz,strWhere)+" ORDER BY '"+orderBy+"' DESC");
+		return findAllBySql(clazz,SqlBuilder.getSelectSQLByWhere(clazz,strWhere)+" ORDER BY "+orderBy+" DESC");
 	}
 	
 	/**
