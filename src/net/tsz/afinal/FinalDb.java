@@ -36,13 +36,15 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.alibaba.fastjson.JSON;
+
 public class FinalDb {
 	
 	private static final String TAG = "FinalDb";
 	
 	private static HashMap<String, FinalDb> daoMap = new HashMap<String, FinalDb>();
 	
-	private SQLiteDatabase db;
+	public SQLiteDatabase db;
 	private DaoConfig config;
 	
 	private FinalDb(DaoConfig config){
@@ -248,7 +250,7 @@ public class FinalDb {
 	
 	private void exeSqlInfo(SqlInfo sqlInfo){
 		if(sqlInfo!=null){
-			debugSql(sqlInfo.getSql());
+			debugSql(sqlInfo.getSql() + " Values:" + JSON.toJSONString(sqlInfo.getBindArgs()));
 			db.execSQL(sqlInfo.getSql(),sqlInfo.getBindArgsAsArray());
 		}else{
 			Log.e(TAG, "sava error:sqlInfo is null");
