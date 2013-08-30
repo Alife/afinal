@@ -112,13 +112,13 @@ public class CursorUtils {
 					}
 					
 				}
-				return entity;
+				return (T)entity;
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		}
 		
-		return null;
+		return (T)null;
 	}
 	
 	

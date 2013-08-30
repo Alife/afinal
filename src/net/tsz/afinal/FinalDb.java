@@ -17,7 +17,6 @@ package net.tsz.afinal;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.String;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -326,8 +325,32 @@ public class FinalDb {
 			cursor=null;
 		}
 	}
+
+	/**
+	 * 删除所有数据表
+	 */
+	public int getCount(Class<?> clazz , String strWhere ) {
+		checkTableExist(clazz);
+		String sql = "select count(*) from "
+				+ TableInfo.get(clazz).getTableName() 
+				+ " where " + strWhere;
+		debugSql(sql);
+		Cursor cursor = db.rawQuery(sql, null);
+		cursor.moveToFirst();
+		int count= cursor.getInt(0);
+		cursor.close();
+		return count;
+	}
 	
-	
+	public void exeSqlInfo(Class<?> clazz , String sqlInfo){
+		checkTableExist(clazz);
+		if(sqlInfo!=null&&!"".equals(sqlInfo)){
+			debugSql(sqlInfo);
+			db.execSQL(sqlInfo);
+		}else{
+			Log.e(TAG, "sava error:sqlInfo is null");
+		}
+	}	
 	private void exeSqlInfo(SqlInfo sqlInfo){
 		if(sqlInfo!=null){
 			debugSql(sqlInfo.getSql() + " Values:" + JSON.toJSONString(sqlInfo.getBindArgs()));
@@ -372,7 +395,7 @@ public class FinalDb {
 		debugSql(sql);
 		DbModel dbModel = findDbModelBySQL(sql);
 		if(dbModel!=null){
-			T entity = CursorUtils.dbModel2Entity(dbModel, clazz);
+			T entity = (T)CursorUtils.dbModel2Entity(dbModel, clazz);
             return loadManyToOne(entity,clazz);
 		}
 		
@@ -392,7 +415,7 @@ public class FinalDb {
 		debugSql(sql);
 		DbModel dbModel = findDbModelBySQL(sql);
 		if(dbModel!=null){
-			T entity = CursorUtils.dbModel2Entity(dbModel, clazz);
+			T entity = (T)CursorUtils.dbModel2Entity(dbModel, clazz);
 			return loadManyToOne(entity,clazz,findClass);
 		}
 		return null;
@@ -449,7 +472,7 @@ public class FinalDb {
 		debugSql(sql);
 		DbModel dbModel = findDbModelBySQL(sql);
 		if(dbModel!=null){
-			T entity = CursorUtils.dbModel2Entity(dbModel, clazz);
+			T entity = (T)CursorUtils.dbModel2Entity(dbModel, clazz);
 			return loadOneToMany(entity,clazz);
 		}
 		
@@ -470,7 +493,7 @@ public class FinalDb {
 		debugSql(sql);
 		DbModel dbModel = findDbModelBySQL(sql);
 		if(dbModel!=null){
-			T entity = CursorUtils.dbModel2Entity(dbModel, clazz);
+			T entity = (T)CursorUtils.dbModel2Entity(dbModel, clazz);
 			return loadOneToMany(entity,clazz,findClass);
 		}
 		
@@ -661,7 +684,7 @@ public class FinalDb {
 	
 	
 	
-	private void checkTableExist(Class<?> clazz){
+	public void checkTableExist(Class<?> clazz){
 		if(!tableIsExist(TableInfo.get(clazz))){
 			String sql = SqlBuilder.getCreatTableSQL(clazz);
 			debugSql(sql);

@@ -27,9 +27,12 @@ import net.tsz.afinal.http.entityhandler.StringEntityHandler;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.StatusLine;
+import org.apache.http.client.CookieStore;
 import org.apache.http.client.HttpRequestRetryHandler;
 import org.apache.http.client.HttpResponseException;
 import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.client.protocol.ClientContext;
+import org.apache.http.cookie.Cookie;
 import org.apache.http.impl.client.AbstractHttpClient;
 import org.apache.http.protocol.HttpContext;
 
@@ -68,6 +71,15 @@ public class  HttpHandler  <T> extends  AsyncTask<Object, Object, Object> implem
 			}
 			if(fileLen > 0)
 				request.setHeader("RANGE", "bytes="+fileLen+"-");
+		}
+		
+		CookieStore cookieStore=(CookieStore) context.getAttribute(ClientContext.COOKIE_STORE);
+		if(cookieStore!=null){
+			String cookieString = "";
+			for (Cookie cookie : cookieStore.getCookies()) {
+				cookieString += cookie.getName() + "=" + cookie.getValue() + ";";
+			}
+			request.setHeader("Cookie", cookieString);  
 		}
 		
 		boolean retry = true;
